@@ -24,7 +24,7 @@ interface TreeNodeProps {
 function TreeNode({ node, depth = 0, defaultOpen = false }: TreeNodeProps) {
   const [isOpen, setIsOpen] = useState<boolean>(defaultOpen);
 
-  const hasChildren = node.children && node.children.length > 0;
+  const hasChildren = !!node.children?.length;
 
   function handleTreeOpen(): void {
     if (node.type === "folder") {
@@ -51,7 +51,7 @@ function TreeNode({ node, depth = 0, defaultOpen = false }: TreeNodeProps) {
 
       {hasChildren && isOpen && (
         <ul className="is-drawer-close:hidden">
-          {node.children.map((child) => (
+          {node.children?.map((child) => (
             <TreeNode key={child.id} node={child} depth={depth + 1} />
           ))}
         </ul>
