@@ -1,26 +1,16 @@
 import { useState } from "react";
-import { data } from "../../data/data";
-import FolderIcon from "../Icons/FolderIcon";
-import FileIcon from "../Icons/FileIcon";
-
-type NodeType = "folder" | "file";
-
-interface TreeNodeData {
-  id: string;
-  name: string;
-  type: NodeType;
-  modifiedAt: string;
-  children?: TreeNodeData[];
-}
-
-interface DataStruture {
-  root: TreeNodeData;
-}
+import type { TreeNodeData } from "../../App";
 
 interface TreeNodeProps {
   node: TreeNodeData;
   depth?: number;
   defaultOpen?: boolean;
+  sidebarOpen: boolean;
+  onSelect: (node: TreeNodeData) => void;
+}
+
+interface SidebarProps {
+  root: TreeNodeData;
   onSelect: (node: TreeNodeData) => void;
 }
 
@@ -28,10 +18,10 @@ function TreeNode({
   node,
   depth = 0,
   defaultOpen = false,
+  sidebarOpen,
   onSelect,
 }: TreeNodeProps) {
   const [isOpen, setIsOpen] = useState<boolean>(defaultOpen);
-
   const hasChildren = !!node.children?.length;
 
   function handleTreeOpen(): void {
@@ -45,28 +35,37 @@ function TreeNode({
   return (
     <li>
       <button
-        className="is-drawer-close:tooltip is-drawer-close:tooltip-right flex w-full items-center gap-1"
-        data-tip={node.name}
+        type="button"
+        title={!sidebarOpen ? node.name : undefined}
         onClick={handleTreeOpen}
-        style={{ paddingLeft: `${depth * 4}px` }}
+        className={`flex w-full items-center rounded-md px-2 py-2 text-left hover:bg-slate-200 ${
+          sidebarOpen ? "gap-2" : "justify-center"
+        }`}
+        style={{
+          paddingLeft: sidebarOpen ? `${depth * 16 + 12}px` : "0.5rem",
+        }}
       >
-        <span>{node.type === "folder" ? "🗂️" : "📄"}</span>
-        <span className="is-drawer-close:hidden">{node.name}</span>
-        {hasChildren && (
-          <span className="is-drawer-close:hidden ml-auto">
-            {isOpen ? "▼" : "▶"}
-          </span>
+        <span className="shrink-0">{node.type === "folder" ? "🗂️" : "📄"}</span>
+
+        {sidebarOpen && (
+          <>
+            <span className="truncate">{node.name}</span>
+            {hasChildren && (
+              <span className="ml-auto">{isOpen ? "▼" : "▶"}</span>
+            )}
+          </>
         )}
       </button>
 
-      {hasChildren && isOpen && (
-        <ul className="is-drawer-close:hidden">
+      {hasChildren && isOpen && sidebarOpen && (
+        <ul className="mt-1 space-y-1">
           {node.children?.map((child) => (
             <TreeNode
               key={child.id}
               node={child}
               depth={depth + 1}
               onSelect={onSelect}
+              sidebarOpen={sidebarOpen}
             />
           ))}
         </ul>
@@ -75,86 +74,53 @@ function TreeNode({
   );
 }
 
-function Sidebar() {
-  const typedData = data as DataStruture;
-  const root = typedData.root;
-  const [selectedNode, setSelectedNode] = useState<TreeNodeData>(root);
+function Sidebar({ root, onSelect }: SidebarProps) {
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
   return (
-    <div className="drawer lg:drawer-open">
-      <input id="my-drawer-4" type="checkbox" className="drawer-toggle" />
-      <div className="drawer-content">
-        <nav className="navbar w-full bg-base-300">
-          <label
-            htmlFor="my-drawer-4"
-            aria-label="open sidebar"
-            className="btn btn-square btn-ghost"
+    <div
+      className={`flex h-screen flex-col border-r border-slate-200 bg-slate-100 transition-all duration-300 ${
+        sidebarOpen ? "w-72" : "w-16"
+      }`}
+    >
+      <div className="flex h-14 items-center justify-between border-b border-slate-200 px-3">
+        {sidebarOpen && (
+          <h2 className="text-lg font-semibold">React Explorer</h2>
+        )}
+
+        <button
+          type="button"
+          onClick={() => setSidebarOpen((prev) => !prev)}
+          className="rounded-md p-2 hover:bg-slate-200"
+          aria-label={sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            strokeLinejoin="round"
+            strokeLinecap="round"
+            strokeWidth="2"
+            fill="none"
+            stroke="currentColor"
+            className="size-5"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              strokeLinejoin="round"
-              strokeLinecap="round"
-              strokeWidth="2"
-              fill="none"
-              stroke="currentColor"
-              className="my-1.5 inline-block size-4"
-            >
-              <path d="M4 4m0 2a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z"></path>
-              <path d="M9 4v16"></path>
-              <path d="M14 10l2 2l-2 2"></path>
-            </svg>
-          </label>
-          <div className="px-4">File Explorer</div>
-        </nav>
-        <div className="p-4">
-          <div className="p-4">
-            {selectedNode.type === "file" ? (
-              <div className="text-base-content/60">
-                <FileIcon />
-                <h2 className="text-lg font-semibold">{selectedNode.name}</h2>
-                <div>{selectedNode.modifiedAt}</div>
-              </div>
-            ) : (
-              <ul className="flex flex-col gap-2">
-                {selectedNode.children?.map((child) => (
-                  <div
-                    key={child.id}
-                    className="gap-2 rounded-md p-2 hover:bg-base-200 cursor-pointer"
-                    onClick={() => setSelectedNode(child)}
-                  >
-                    <div>
-                      {child.type === "folder" ? <FolderIcon /> : <FileIcon />}
-                    </div>
-                    <h2 className="text-lg font-semibold">{child.name}</h2>
-                    <div>{child.modifiedAt}</div>
-                  </div>
-                ))}
-              </ul>
-            )}
-          </div>
-        </div>
+            <path d="M4 4m0 2a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z"></path>
+            <path d="M9 4v16"></path>
+            <path d="M14 10l2 2l-2 2"></path>
+          </svg>
+        </button>
       </div>
 
-      <div className="drawer-side is-drawer-close:overflow-visible">
-        <label
-          htmlFor="my-drawer-4"
-          aria-label="close sidebar"
-          className="drawer-overlay"
-        ></label>
-        <div className="flex min-h-full flex-col items-start bg-base-200 is-drawer-close:w-14 is-drawer-open:w-64">
-          <ul className="menu w-full grow">
-            <li>
-              <span className="is-drawer-close:hidden">React Explorer</span>
-            </li>
-            <TreeNode
-              node={root}
-              depth={0}
-              defaultOpen={true}
-              onSelect={setSelectedNode}
-            />
-          </ul>
-        </div>
+      <div className="flex-1 overflow-y-auto p-2">
+        <ul className="space-y-1">
+          <TreeNode
+            node={root}
+            depth={0}
+            defaultOpen={true}
+            onSelect={onSelect}
+            sidebarOpen={sidebarOpen}
+          />
+        </ul>
       </div>
     </div>
   );
