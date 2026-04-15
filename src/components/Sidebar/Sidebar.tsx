@@ -19,14 +19,22 @@ interface TreeNodeProps {
   node: TreeNodeData;
   depth?: number;
   defaultOpen?: boolean;
+  onSelect: (node: TreeNodeData) => void;
 }
 
-function TreeNode({ node, depth = 0, defaultOpen = false }: TreeNodeProps) {
+function TreeNode({
+  node,
+  depth = 0,
+  defaultOpen = false,
+  onSelect,
+}: TreeNodeProps) {
   const [isOpen, setIsOpen] = useState<boolean>(defaultOpen);
 
   const hasChildren = !!node.children?.length;
 
   function handleTreeOpen(): void {
+    onSelect(node);
+
     if (node.type === "folder") {
       setIsOpen((prev) => !prev);
     }
@@ -52,7 +60,12 @@ function TreeNode({ node, depth = 0, defaultOpen = false }: TreeNodeProps) {
       {hasChildren && isOpen && (
         <ul className="is-drawer-close:hidden">
           {node.children?.map((child) => (
-            <TreeNode key={child.id} node={child} depth={depth + 1} />
+            <TreeNode
+              key={child.id}
+              node={child}
+              depth={depth + 1}
+              onSelect={onSelect}
+            />
           ))}
         </ul>
       )}
@@ -63,6 +76,7 @@ function TreeNode({ node, depth = 0, defaultOpen = false }: TreeNodeProps) {
 function Sidebar() {
   const typedData = data as DataStruture;
   const root = typedData.root;
+  const [selectedNode, setSelectedNode] = useState<TreeNodeData>(root);
 
   return (
     <div className="drawer lg:drawer-open">
@@ -91,7 +105,11 @@ function Sidebar() {
           </label>
           <div className="px-4">File Explorer</div>
         </nav>
-        <div className="p-4">Page Content</div>
+        <div className="p-4">
+          <div className="p-4">
+            <h2 className="text-lg font-semibold">{selectedNode.name}</h2>
+          </div>
+        </div>
       </div>
 
       <div className="drawer-side is-drawer-close:overflow-visible">
@@ -105,7 +123,12 @@ function Sidebar() {
             <li>
               <span className="is-drawer-close:hidden">React Explorer</span>
             </li>
-            <TreeNode node={root} depth={0} defaultOpen={true} />
+            <TreeNode
+              node={root}
+              depth={0}
+              defaultOpen={true}
+              onSelect={setSelectedNode}
+            />
           </ul>
         </div>
       </div>
