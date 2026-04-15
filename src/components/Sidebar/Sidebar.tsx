@@ -1,5 +1,5 @@
 import { useState } from "react";
-import data from "../../data/data.json";
+import { data } from "../../data/data";
 
 type NodeType = "folder" | "file";
 
@@ -7,7 +7,8 @@ interface TreeNodeData {
   id: string;
   name: string;
   type: NodeType;
-  children: TreeNodeData[];
+  modifiedAt: string;
+  children?: TreeNodeData[];
 }
 
 interface DataStruture {
@@ -21,11 +22,11 @@ interface TreeNodeProps {
 }
 
 function TreeNode({ node, depth = 0, defaultOpen = false }: TreeNodeProps) {
-  const [isOpen, setIsOpen] = useState(defaultOpen);
+  const [isOpen, setIsOpen] = useState<boolean>(defaultOpen);
 
   const hasChildren = node.children && node.children.length > 0;
 
-  function handleTreeOpen() {
+  function handleTreeOpen(): void {
     if (node.type === "folder") {
       setIsOpen((prev) => !prev);
     }
@@ -60,7 +61,8 @@ function TreeNode({ node, depth = 0, defaultOpen = false }: TreeNodeProps) {
 }
 
 function Sidebar() {
-  const root = (data as DataStruture).root;
+  const typedData = data as DataStruture;
+  const root = typedData.root;
 
   return (
     <div className="drawer lg:drawer-open">
