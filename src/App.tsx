@@ -44,7 +44,7 @@ function App() {
   return (
     <div className="min-h-screen flex bg-slate-100 text-slate-900">
       <aside className="shrink-0">
-        <Sidebar root={root} onSelect={setSelectedNode} />
+        <Sidebar root={root} onSelect={setSelectedNode} selectedNode={selectedNode}/>
       </aside>
 
       <main className="flex-1">
