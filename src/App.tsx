@@ -6,6 +6,8 @@ import { findNodeAndPath } from "./utils/findnodepath";
 import MainContent from "./components/MainContent/MainContent";
 import Breadcrumbs from "./components/Breadcrumbs/Breadcrumbs";
 import { insertNode } from "./utils/insertNode";
+import { deleteNode } from "./utils/deleteNode";
+import { renameNode } from "./utils/renameNode";
 
 type NodeType = "folder" | "file";
 
@@ -101,6 +103,38 @@ function App() {
     setRoot(updatedTree);
   }
 
+  function handleDelete() {
+    if (selectedNode.id === root.id) {
+      alert("Root folder cannot be deleted");
+      return;
+    }
+
+    const shouldDelete = window.confirm(`Delete "${selectedNode.name}"?`);
+    if (!shouldDelete) return;
+
+    const parentCrumb = items[items.length - 2];
+    const fallbackId = parentCrumb?.id ?? root.id;
+
+    const updatedTree = deleteNode(root, selectedNode.id);
+
+    setRoot(updatedTree);
+    setSelectedNodeId(fallbackId);
+  }
+
+  function handleRename() {
+    const newName = prompt("Enter new name", selectedNode.name);
+    if (!newName) return;
+
+    const updatedTree = renameNode(
+      root,
+      selectedNode.id,
+      newName,
+      getCurrentDateTime()
+    );
+
+    setRoot(updatedTree);
+  }
+
   return (
     <div className="min-h-screen flex bg-slate-100 text-slate-900">
       <aside className="shrink-0">
@@ -118,6 +152,8 @@ function App() {
           onNavigate={handleNavigate}
           onAddFile={handleAddFile}
           onAddFolder={handleAddFolder}
+          onRename={handleRename}
+          onDelete={handleDelete}
         />
       </main>
     </div>

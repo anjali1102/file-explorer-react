@@ -8,6 +8,8 @@ interface MainContentProps {
   onNavigate: (id: string) => void;
   onAddFile: () => void;
   onAddFolder: () => void;
+  onRename: () => void;
+  onDelete: () => void;
 }
 
 type ViewMode = "grid" | "list";
@@ -17,6 +19,8 @@ function MainContent({
   onNavigate,
   onAddFile,
   onAddFolder,
+  onRename,
+  onDelete,
 }: MainContentProps) {
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
 
@@ -51,22 +55,36 @@ function MainContent({
               </button>
             </div>
           )}
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={onAddFile}
-              className={`rounded-md px-3 py-1.5 text-sm cursor-pointer bg-cyan-500 hover:bg-sky-700 text-white`}
-            >
-              Add File
-            </button>
-            <button
-              type="button"
-              onClick={onAddFolder}
-              className={`rounded-md px-3 py-1.5 text-sm cursor-pointer bg-cyan-500 hover:bg-sky-700 text-white`}
-            >
-              Add Folder
-            </button>
-          </div>
+        </div>
+        <div className="flex justify-center items-center gap-2 pb-2">
+          <button
+            type="button"
+            onClick={onAddFile}
+            className={`rounded-md px-3 py-1.5 text-sm cursor-pointer bg-orange-300 hover:bg-orange-400 text-white`}
+          >
+            Add File
+          </button>
+          <button
+            type="button"
+            onClick={onAddFolder}
+            className={`rounded-md px-3 py-1.5 text-sm cursor-pointer bg-yellow-500 hover:bg-yellow-600 text-white`}
+          >
+            Add Folder
+          </button>
+          <button
+            type="button"
+            onClick={onRename}
+            className={`rounded-md px-3 py-1.5 text-sm cursor-pointer bg-green-500 hover:bg-green-600 text-white`}
+          >
+            Rename
+          </button>
+          <button
+            type="button"
+            onClick={onDelete}
+            className={`rounded-md px-3 py-1.5 text-sm cursor-pointer bg-red-500 hover:bg-red-600 text-white`}
+          >
+            Delete
+          </button>
         </div>
       </div>
 
