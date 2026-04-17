@@ -6,11 +6,18 @@ import type { TreeNodeData } from "../../App";
 interface MainContentProps {
   selectedNode: TreeNodeData;
   onNavigate: (id: string) => void;
+  onAddFile: () => void;
+  onAddFolder: () => void;
 }
 
 type ViewMode = "grid" | "list";
 
-function MainContent({ selectedNode, onNavigate }: MainContentProps) {
+function MainContent({
+  selectedNode,
+  onNavigate,
+  onAddFile,
+  onAddFolder,
+}: MainContentProps) {
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
 
   return (
@@ -44,6 +51,22 @@ function MainContent({ selectedNode, onNavigate }: MainContentProps) {
               </button>
             </div>
           )}
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={onAddFile}
+              className={`rounded-md px-3 py-1.5 text-sm cursor-pointer bg-cyan-500 hover:bg-sky-700 text-white`}
+            >
+              Add File
+            </button>
+            <button
+              type="button"
+              onClick={onAddFolder}
+              className={`rounded-md px-3 py-1.5 text-sm cursor-pointer bg-cyan-500 hover:bg-sky-700 text-white`}
+            >
+              Add Folder
+            </button>
+          </div>
         </div>
       </div>
 
