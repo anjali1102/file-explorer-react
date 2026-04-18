@@ -25,7 +25,7 @@ function Sidebar({ root, onSelect, selectedNode }: SidebarProps) {
         <button
           type="button"
           onClick={() => setSidebarOpen((prev) => !prev)}
-          className="rounded-md p-2 hover:bg-slate-200"
+          className="rounded-md p-2 border-2 border-red-400 hover:bg-red-200"
           aria-label={sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
         >
           <svg
@@ -35,8 +35,10 @@ function Sidebar({ root, onSelect, selectedNode }: SidebarProps) {
             strokeLinecap="round"
             strokeWidth="2"
             fill="none"
-            stroke="currentColor"
-            className="size-5"
+            stroke="red"
+            className={`size-8 transition-transform duration-300 cursor-pointer ${
+              sidebarOpen ? "rotate-0" : "rotate-180"
+            }`}
           >
             <path d="M4 4m0 2a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z"></path>
             <path d="M9 4v16"></path>
