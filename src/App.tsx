@@ -8,6 +8,7 @@ import Breadcrumbs from "./components/Breadcrumbs/Breadcrumbs";
 import { insertNode } from "./utils/insertNode";
 import { deleteNode } from "./utils/deleteNode";
 import { renameNode } from "./utils/renameNode";
+import { searchTree } from "./utils/searchTree";
 
 type NodeType = "folder" | "file";
 
@@ -34,10 +35,13 @@ function App() {
   const [selectedNodeId, setSelectedNodeId] = useState<string>(
     typedData.root.id
   );
+  const [search, setSearch] = useState("");
 
   const selectedResult = findNodeAndPath(root, selectedNodeId);
   const selectedNode = selectedResult?.node ?? root;
   const items = selectedResult?.path ?? [];
+
+  const searchResults = search.trim() ? searchTree(root, search) : [];
 
   function handleNavigate(id: string) {
     const result = findNodeAndPath(root, id);
@@ -154,6 +158,9 @@ function App() {
           onAddFolder={handleAddFolder}
           onRename={handleRename}
           onDelete={handleDelete}
+          search={search}
+          onSearchChange={setSearch}
+          searchResults={searchResults}
         />
       </main>
     </div>
